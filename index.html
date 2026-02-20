@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ananya Action App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<style>
+body{
+font-family:Comic Sans MS;
+text-align:center;
+margin:0;
+background:linear-gradient(45deg,#ff6ec4,#7873f5);
+color:white;
+}
+button{
+padding:15px 25px;
+margin:10px;
+font-size:20px;
+border:none;
+border-radius:20px;
+background:#ffcc00;
+color:black;
+font-weight:bold;
+}
+.card{
+background:white;
+color:black;
+margin:20px;
+padding:20px;
+border-radius:25px;
+}
+.hidden{display:none;}
+</style>
+</head>
+<body>
+
+<h1>🌟 Welcome Ananya 🌟</h1>
+<h2>Action Words Super Fun</h2>
+
+<div id="home">
+<button onclick="startQuiz()">🎮 Quiz</button>
+<button onclick="showCertificate()">🏆 Certificate</button>
+</div>
+
+<div id="gameArea" class="card hidden">
+<h2 id="question"></h2>
+<div id="options"></div>
+<div id="stars"></div>
+<button onclick="goHome()">⬅ Home</button>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('service-worker.js');
+}
+
+let words=["jumping","reading","crying","kicking","swimming","laughing","eating","swinging"];
+let score=0,current="";
+
+function speak(text){
+let speech=new SpeechSynthesisUtterance(text);
+speech.rate=0.9;
+speech.pitch=1.2;
+speechSynthesis.speak(speech);
+}
+
+function goHome(){
+document.getElementById("home").classList.remove("hidden");
+document.getElementById("gameArea").classList.add("hidden");
+}
+
+function startQuiz(){
+document.getElementById("home").classList.add("hidden");
+document.getElementById("gameArea").classList.remove("hidden");
+nextQuestion();
+}
+
+function nextQuestion(){
+current=words[Math.floor(Math.random()*words.length)];
+document.getElementById("question").innerHTML="Choose: "+current;
+speak("Ananya choose "+current);
+let optionsDiv=document.getElementById("options");
+optionsDiv.innerHTML="";
+words.sort(()=>0.5-Math.random()).slice(0,3).forEach(word=>{
+let btn=document.createElement("button");
+btn.innerText=word;
+btn.onclick=()=>check(word);
+optionsDiv.appendChild(btn);
+});
+}
+
+function check(ans){
+if(ans===current){
+score++;
+document.getElementById("stars").innerHTML="⭐ "+score;
+speak("Excellent!");
+}else{
+speak("Try again");
+}
+setTimeout(nextQuestion,1500);
+}
+
+function showCertificate(){
+let today=new Date().toLocaleDateString();
+document.getElementById("home").classList.add("hidden");
+document.getElementById("gameArea").classList.remove("hidden");
+document.getElementById("question").innerHTML=
+"🏆 Action Star Champion 🏆<br><br>Ananya<br><br>Date: "+today;
+document.getElementById("options").innerHTML="";
+document.getElementById("stars").innerHTML="";
+speak("Congratulations Ananya!");
+}
+</script>
+</body>
+</html>
